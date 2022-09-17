@@ -1,3 +1,4 @@
+/*Reset configurações do CSS*/
 * {
     margin: 0;
     padding: 0;
@@ -5,7 +6,7 @@
 }
 
 ul {
-    list-style: none;
+    list-style: none; /*Retira os pontinhos da lista de itens*/
 }
 
 body {
@@ -20,6 +21,10 @@ body * {
     font-family: 'Inter', sans-serif;
     line-height: 160%;
 }
+
+/* main * {
+    border: 1px solid red;
+} */
 
 main {
     max-width: 580px;
