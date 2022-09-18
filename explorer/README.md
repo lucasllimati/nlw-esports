@@ -7,7 +7,7 @@
 
 Este é um projeto desenvolvido durante a **[Next Level Week](https://nextlevelweek.com/)**, realizada pela **[@Rocketseat](https://github.com/Rocketseat)** durante os dias 11 a 18 de Setembro de 2022.
 
-[🔗 Clique aqui para acessar](https://lucasllimati.github.io/nlw-esports/)
+[🔗 Clique aqui para acessar](https://lucasllimati.github.io/nlw-esports/explorer/)
 
 ## 📄 Layout
 
