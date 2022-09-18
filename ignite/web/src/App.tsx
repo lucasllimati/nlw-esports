@@ -1,7 +1,7 @@
 //JSX: JavaScript + XML (HTML)
 
 function App() {
-  return <h1>Hello World!</h1>
+  return <h1>Hello World NLW!</h1>
 }
 
 export default App
