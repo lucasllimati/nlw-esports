@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@isaacs/brace-expansion": "^5.0.1",
     "@prisma/client": "^4.3.1",
     "@types/cors": "^2.8.12",
     "cors": "^2.8.5",
