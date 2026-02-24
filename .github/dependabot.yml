@@ -5,7 +5,33 @@
 
 version: 2
 updates:
-  - package-ecosystem: "" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # 1. Configuração para o Servidor (Backend)
+  - package-ecosystem: "npm"
+    directory: "/ignite/server"
     schedule:
-      interval: "weekly"
+      interval: "daily" # Checa segurança todo dia
+    open-pull-requests-limit: 5
+    groups:
+      server-dependencies:
+        patterns: ["*"]
+
+  # 2. Configuração para o App (Mobile)
+  - package-ecosystem: "npm"
+    directory: "/ignite/mobile"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+    # Como o Mobile usa Expo/React 19, ignoramos updates de versão 'major' 
+    # automaticamente para evitar que o robô quebre o app sozinho.
+    ignore:
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-native"
+        update-types: ["version-update:semver-major"]
+
+  # 3. Configuração para o Web (Frontend)
+  - package-ecosystem: "npm"
+    directory: "/ignite/web"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
