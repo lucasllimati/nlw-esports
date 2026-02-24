@@ -10,17 +10,17 @@
   },
   "dependencies": {
     "expo": "^54.0.31",
-    "expo-status-bar": "~1.4.0",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "expo-status-bar": "~3.0.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "react-native": "^0.83.1",
-    "react-native-web": "~0.18.7"
+    "react-native-web": "~0.21.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@types/react": "~19.2.0",
     "@types/react-native": "~0.73.0",
-    "typescript": "~5.0.0"
+    "typescript": "~5.9.3"
   },
   "overrides": {
     "tar": "^7.5.9",
