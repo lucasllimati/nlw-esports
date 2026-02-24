@@ -9,7 +9,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/ignite/server"
     schedule:
-      interval: "daily" # Checa segurança todo dia
+      interval: "weekly" # Checa segurança todo dia
     open-pull-requests-limit: 5
     groups:
       server-dependencies:
@@ -19,7 +19,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/ignite/mobile"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 5
     # Como o Mobile usa Expo/React 19, ignoramos updates de versão 'major' 
     # automaticamente para evitar que o robô quebre o app sozinho.
@@ -33,5 +33,5 @@ updates:
   - package-ecosystem: "npm"
     directory: "/ignite/web"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 5
