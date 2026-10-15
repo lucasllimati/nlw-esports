@@ -18,6 +18,10 @@ updates:
       server-dependencies:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    ignore:
+      # Os tipos acompanham a versão do Node usada (24); suba junto com o Node
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # 2. App (Mobile)
   - package-ecosystem: "npm"
@@ -32,25 +36,23 @@ updates:
       mobile-dependencies:
         patterns: ["*"]
         update-types: ["patch"]
-    # Estes pacotes têm a versão fixada pelo Expo SDK. Atualize-os junto com
-    # o SDK, manualmente: `npx expo install expo@^<sdk> --fix`
+    # Estes pacotes têm a versão fixada pelo Expo SDK (até o patch: o Expo 57
+    # exige react 19.2.3 exato). Atualize-os junto com o SDK, manualmente:
+    # `npx expo install expo@^<sdk> --fix`
     ignore:
       - dependency-name: "expo"
         update-types: ["version-update:semver-major"]
       - dependency-name: "expo-*"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "react-dom"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "react-native"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "@types/react"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "@babel/core"
         update-types: ["version-update:semver-major"]
       - dependency-name: "typescript"
-        update-types: ["version-update:semver-major"]
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
 
   # 3. Web (Frontend)
   - package-ecosystem: "npm"
@@ -65,6 +67,9 @@ updates:
       web-dependencies:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # 4. GitHub Actions (as actions são fixadas por SHA)
   - package-ecosystem: "github-actions"
