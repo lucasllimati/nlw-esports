@@ -1,17 +1,35 @@
 name: Dependabot Auto-Merge
 on: pull_request
 
-permissions:
-  contents: write
-  pull-requests: write
+# Nenhuma permissão por padrão; o job abaixo pede só o necessário
+permissions: {}
 
 jobs:
   dependabot:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    # Usa o autor do PR (e não github.actor, que muda em re-runs) e
+    # não roda em forks
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+
+      # Patch: sempre. Minor: exceto no mobile, onde o Expo SDK fixa versões
+      # (ex.: react-native 0.86 -> 0.87 é "minor" e quebra o app).
+      # Major: nunca, sempre revisão manual.
+      # O merge só acontece depois que os checks obrigatórios (CI) passarem.
       - name: Enable auto-merge
-        run: gh pr merge --auto --merge "$PR_URL"
+        if: >-
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          (steps.metadata.outputs.update-type == 'version-update:semver-minor' &&
+           steps.metadata.outputs.directory != '/ignite/mobile')
+        run: gh pr merge --auto --squash "$PR_URL"
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
