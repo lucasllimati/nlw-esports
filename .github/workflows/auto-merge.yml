@@ -7,12 +7,14 @@ permissions: {}
 jobs:
   dependabot:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     # Usa o autor do PR (e não github.actor, que muda em re-runs) e
     # não roda em forks
     if: >-
       github.event.pull_request.user.login == 'dependabot[bot]' &&
       github.event.pull_request.head.repo.full_name == github.repository
     permissions:
+      checks: read
       contents: write
       pull-requests: write
     steps:
@@ -23,13 +25,40 @@ jobs:
       # Patch: sempre. Minor: exceto no mobile, onde o Expo SDK fixa versões
       # (ex.: react-native 0.86 -> 0.87 é "minor" e quebra o app).
       # Major: nunca, sempre revisão manual.
-      # O merge só acontece depois que os checks obrigatórios (CI) passarem.
-      - name: Enable auto-merge
+      - name: Check update type
+        id: eligible
         if: >-
           steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
           (steps.metadata.outputs.update-type == 'version-update:semver-minor' &&
            steps.metadata.outputs.directory != '/ignite/mobile')
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      # Sem proteção de branch, `gh pr merge --auto` faz o merge na hora.
+      # Por isso esperamos explicitamente o check "CI OK" passar.
+      - name: Wait for CI
+        if: steps.eligible.outputs.ok == 'true'
+        run: |
+          for attempt in $(seq 1 80); do
+            result=$(gh api "repos/$REPO/commits/$SHA/check-runs?check_name=CI%20OK" \
+              --jq '.check_runs | sort_by(.started_at) | last | select(. != null) | "\(.status) \(.conclusion)"')
+            echo "CI OK: ${result:-aguardando}"
+            case "$result" in
+              "completed success") exit 0 ;;
+              completed*) echo "::error::CI falhou; auto-merge cancelado"; exit 1 ;;
+            esac
+            sleep 30
+          done
+          echo "::error::Tempo esgotado esperando o CI"
+          exit 1
+        env:
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge
+        if: steps.eligible.outputs.ok == 'true'
+        run: gh pr merge --auto --squash --match-head-commit "$SHA" "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
+          SHA: ${{ github.event.pull_request.head.sha }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
