@@ -1,2 +1,19 @@
 # dependencies
 /node_modules
+
+# build
+/build
+
+# Prisma Client gerado
+/src/generated
+
+# variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# bancos SQLite locais
+*.db
+*.db-journal
+*.sqlite
+*.sqlite-journal

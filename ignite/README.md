@@ -19,9 +19,32 @@ Lembrando que você precisa ter uma conta no [Figma](http://figma.com/) para ace
 
 ## 📚 Tecnologias
 
-- HTML
-- CSS
-- Git e Github
+- Node.js, Express, Prisma e SQLite (server)
+- React, Vite e Tailwind CSS (web)
+- React Native e Expo (mobile)
+- TypeScript
+
+## 🚀 Como executar
+
+Requisito: Node.js 22.12+ (recomendado 24).
+
+```bash
+# API (http://localhost:3333)
+cd ignite/server
+cp .env.example .env      # ajuste CORS_ORIGIN, PORT etc.
+npm ci
+npm run db:deploy         # cria o banco SQLite local
+npm run db:seed           # cadastra os jogos
+npm run dev
+
+# Web (http://localhost:5173)
+cd ignite/web && npm ci && npm run dev
+
+# Mobile
+cd ignite/mobile && npm ci && npm start
+```
+
+Nunca versione o arquivo `.env` nem o banco (`*.db`): ambos estão no `.gitignore`.
 
 ## 📇 Contato
 

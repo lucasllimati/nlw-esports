@@ -1,37 +1,78 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
+# Documentação de todas as opções:
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
 updates:
-  # 1. Configuração para o Servidor (Backend)
+  # 1. Servidor (Backend)
   - package-ecosystem: "npm"
     directory: "/ignite/server"
     schedule:
-      interval: "weekly" # Checa segurança todo dia
+      interval: "weekly"
+    # Espera alguns dias após a publicação antes de propor a versão:
+    # reduz o risco de instalar um pacote comprometido recém-publicado
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
     open-pull-requests-limit: 5
     groups:
       server-dependencies:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
 
-  # 2. Configuração para o App (Mobile)
+  # 2. App (Mobile)
   - package-ecosystem: "npm"
     directory: "/ignite/mobile"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
     open-pull-requests-limit: 5
-    # Como o Mobile usa Expo/React 19, ignoramos updates de versão 'major' 
-    # automaticamente para evitar que o robô quebre o app sozinho.
+    groups:
+      mobile-dependencies:
+        patterns: ["*"]
+        update-types: ["patch"]
+    # Estes pacotes têm a versão fixada pelo Expo SDK. Atualize-os junto com
+    # o SDK, manualmente: `npx expo install expo@^<sdk> --fix`
     ignore:
-      - dependency-name: "react"
+      - dependency-name: "expo"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "expo-*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "react-native"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@babel/core"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
 
-  # 3. Configuração para o Web (Frontend)
+  # 3. Web (Frontend)
   - package-ecosystem: "npm"
     directory: "/ignite/web"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
     open-pull-requests-limit: 5
+    groups:
+      web-dependencies:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # 4. GitHub Actions (as actions são fixadas por SHA)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns: ["*"]

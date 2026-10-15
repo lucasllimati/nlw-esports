@@ -1,37 +1,50 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/server.js",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsnd --exit-child src/server.ts"
+  "private": true,
+  "description": "API do NLW eSports",
+  "main": "build/server.js",
+  "engines": {
+    "node": ">=22.12"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=.env src/server.ts",
+    "build": "tsc",
+    "start": "node --env-file-if-exists=.env build/server.js",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test \"src/**/*.test.ts\"",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "postinstall": "prisma generate"
+  },
+  "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.23",
-    "@isaacs/brace-expansion": "^5.0.1",
-    "@prisma/client": "^7.4.1",
-    "@types/cors": "^2.8.12",
-    "body-parser": "^2.2.2",
-    "cors": "^2.8.5",
-    "express": "^5.2.1"
+    "@prisma/adapter-better-sqlite3": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "prisma": "^7.4.1",
-    "ts-node-dev": "^2.0.0",
+    "@types/node": "^24.19.2",
+    "prisma": "^7.10.0",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
   "overrides": {
-    "hono": "^4.11.10",
-    "lodash": "^4.17.23",
-    "minimatch": "^10.1.1",
-    "brace-expansion": "^2.0.1",
-    "@isaacs/brace-expansion": "^5.0.1",
-    "glob": "^11.0.1",
-    "rimraf": "^6.0.1"
+    "deepmerge-ts": "^8.0.2",
+    "mysql2": "^3.24.6"
+  },
+  "allowScripts": {
+    "@prisma/engines@7.10.0": true,
+    "better-sqlite3@12.11.1": true,
+    "esbuild@0.28.2": true,
+    "prisma@7.10.0": true
   }
 }

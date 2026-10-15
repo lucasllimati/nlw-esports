@@ -1,0 +1,77 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: server
+            audit-level: high
+          - project: web
+            audit-level: high
+          # braces/node-forge (toolchain do Expo/Metro) ainda não têm versão
+          # corrigida publicada; volte para "high" quando tiverem
+          - project: mobile
+            audit-level: critical
+    defaults:
+      run:
+        working-directory: ignite/${{ matrix.project }}
+    env:
+      DATABASE_URL: file:./prisma/ci.db
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ignite/${{ matrix.project }}/package-lock.json
+
+      - run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=${{ matrix.audit-level }}
+
+      - name: Server checks
+        if: matrix.project == 'server'
+        run: |
+          npm run typecheck
+          npm test
+          npm run build
+          npx prisma migrate deploy
+
+      - name: Web checks
+        if: matrix.project == 'web'
+        run: npm run build
+
+      - name: Mobile checks
+        if: matrix.project == 'mobile'
+        run: |
+          npm run typecheck
+          npx expo install --check
+
+  # Check único para usar como "required status check" na proteção da main
+  ci-ok:
+    name: CI OK
+    if: always()
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: test "${{ needs.build.result }}" = "success"
