@@ -20,14 +20,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Bloqueia vulnerabilidades moderate ou piores. No mobile resta só
+          # deepmerge (low, sem correção publicada, usado no build do Expo)
           - project: server
-            audit-level: high
+            audit-level: moderate
           - project: web
-            audit-level: high
-          # braces/node-forge (toolchain do Expo/Metro) ainda não têm versão
-          # corrigida publicada; volte para "high" quando tiverem
+            audit-level: moderate
           - project: mobile
-            audit-level: critical
+            audit-level: moderate
     defaults:
       run:
         working-directory: ignite/${{ matrix.project }}
@@ -65,7 +65,9 @@ jobs:
         if: matrix.project == 'mobile'
         run: |
           npm run typecheck
-          npx expo install --check
+          # Offline: compara com as versões exigidas pelo Expo instalado, e não
+          # com a última publicada, que quebrava todo PR a cada patch do Expo
+          EXPO_OFFLINE=1 npx expo install --check
 
   # Check único para usar como "required status check" na proteção da main
   ci-ok:
